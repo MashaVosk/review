@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товары Золотого яблока здоровье и аптека</title>
+</head>
+<body>
+    <h1>Товары Золотого яблока здоровье и аптека</h1>
+    <form id="sortingForm">
+        <br>
+        <label for="comp">Выберите компанию:</label>
+        <select id="comp" name="comp">
+            {% if comp %}
+                {% for c in comp %}
+                <option value={{ c }}>{{ c.replace('@', ' ') }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+        <br>
+        <label for="sortType">Выберите как отсортировать:</label>
+        <select id="sortType" name="sortType">
+            <option value="1">По А-Я названию производителя</option>
+            <option value="2">По Я-А названию производителя</option>
+            <option value="3">По А-Я названию</option>
+            <option value="4">По Я-А названию</option>
+            <option value="5">По возрастанию цены</option>
+            <option value="6">По убывагию цены</option>
+        </select>
+        <br>
+        <button type="submit">Сортировать</button>
+    </form>
+    <div class="products">
+        {% if products %}
+            {% for product in products %}
+            <div class="product-item">
+                <p>{{ loop.index }})</p>
+                <a href={{product[4]}}> {{ product[1] }} {{ product[2] }}  {{ product[3] }}₽</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Товаров по вашему запросу не найдено</p>
+        {% endif %}
+    </div>
+</body>
+</html>
