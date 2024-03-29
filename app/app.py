@@ -1,16 +1,19 @@
 from flask import request, render_template, Flask
 import sqlite3
 
+class Bd:
+    connection = None
+    cursor = None
+
 app = Flask(__name__)
-connection = None
-cursor = None
+con_cur = Bd()
 
 def filtered(comp=None, sort_type=None):
     if comp:
-        cursor.execute('SELECT * FROM Product WHERE Company == ?', (comp,))
+        con_cur.cursor.execute('SELECT * FROM Product WHERE Company == ?', (comp,))
     else:
-        cursor.execute('SELECT * FROM Product')
-    data = cursor.fetchall()
+        con_cur.cursor.execute('SELECT * FROM Product')
+    data = con_cur.cursor.fetchall()
 
     if sort_type == "1":
         data = sorted(data, key=lambda x: x[1])
@@ -33,20 +36,19 @@ def main():
     if comp:
         comp = comp.replace('@', ' ')
     sort_type = request.args.get('sortType')
-    cursor.execute('SELECT DISTINCT Company FROM Product')
-    company = [i[0].replace(' ', '@') for i in cursor.fetchall()]
+    con_cur.cursor.execute('SELECT DISTINCT Company FROM Product')
+    company = [i[0].replace(' ', '@') for i in con_cur.cursor.fetchall()]
     company.sort()
     data = filtered(comp, sort_type)
     return render_template('site.html', comp = company, products = data)
 
-def start_app(c):
-    global connection, cursor
-    connection = c
-    cursor = connection.cursor()
-    if connection:
+def start_app(connection):
+    con_cur.connection = connection
+    con_cur.cursor = connection.cursor()
+    if con_cur.connection:
         app.run(debug=True)
 
 if __name__ == "__main__":
-    connection = sqlite3.connect('my_database.db')
-    cursor = connection.cursor()
-    start_app(connection)
+    con_cur.connection = sqlite3.connect('my_database.db')
+    con_cur.cursor = con_cur.connection.cursor()
+    start_app(con_cur.connection)

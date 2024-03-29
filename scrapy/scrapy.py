@@ -7,17 +7,17 @@ def parser(connection, url, numpage = 20):
     cursor = connection.cursor()
 
     for p in range(1, numpage):
-        u = url + '?p=' + str(p)
-        page = requests.get(u)
+        new_url = url + '?p=' + str(p)
+        page = requests.get(new_url)
         soup = BeautifulSoup(page.text, 'html.parser')
 
         list_name1 = soup.findAll('meta', itemprop='name')
         list_price1 = soup.findAll('meta', itemprop='price')
 
-        i = 0
         list_company = []
         list_name = []
         list_price = []
+        i = 0
         while i+1 < len(list_name1):
             if not("Золотое яблоко" in list_name1[i+1]['content'] or "Золотое яблоко" in list_name1[i]['content']):
                 list_company.append(list_name1[i]['content'])
@@ -28,8 +28,8 @@ def parser(connection, url, numpage = 20):
             if list_price1[i]['content'] != '0':
                 list_price.append(list_price1[i]['content'])
 
-        a = soup.findAll(href=re.compile("/\d{11}-"))
-        list_link = ["https://goldapple.ru" + i["href"] for i in a]
+        links = soup.findAll(href=re.compile("/\d{11}-"))
+        list_link = ["https://goldapple.ru" + i["href"] for i in links]
         i = 0
         while i < len(list_company) and i < len(list_price) and i < len(list_name) and i < len(list_link):
             cursor.execute('INSERT INTO Product (Company, Name, Price, Link) VALUES (?, ?, ?, ?)', (list_company[i], list_name[i], int(list_price[i]), list_link[i]))
