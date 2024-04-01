@@ -46,7 +46,7 @@ def start_app(connection):
     con_cur.connection = connection
     con_cur.cursor = connection.cursor()
     if con_cur.connection:
-        app.run(debug=True)
+        app.run(host='0.0.0.0', debug=True)
 
 if __name__ == "__main__":
     con_cur.connection = sqlite3.connect('my_database.db')
